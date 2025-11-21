@@ -147,17 +147,17 @@
     <script>
       // Update color displays when inputs change
       document.querySelectorAll('input[type="color"]').forEach((input) => {
-        const valueDisplay = document.getElementById(input.id + "-value");
+        const valueDisplay = document.getElementById(input.id + "-value")
 
         input.addEventListener("input", (e) => {
-          valueDisplay.textContent = e.target.value;
-          valueDisplay.style.color = e.target.value;
-        });
+          valueDisplay.textContent = e.target.value
+          valueDisplay.style.color = e.target.value
+        })
 
         input.addEventListener("change", (e) => {
-          console.log(`${input.id} changed to:`, e.target.value);
-        });
-      });
+          console.log(`${input.id} changed to:`, e.target.value)
+        })
+      })
     </script>
   </body>
 </html>

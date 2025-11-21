@@ -2,16 +2,16 @@
  * Handles color picker DOM creation and UI updates
  */
 
-import { hexToHSV, hexToRGB, hsvToHex } from "../utils/ColorConversions.mjs";
+import { hexToHSV, hexToRGB, hsvToHex } from "../utils/ColorConversions.mjs"
 
 export class PickerUI {
   static createPickerElement(initialColor) {
-    const container = document.createElement("div");
-    container.className = "bcp-color-picker";
+    const container = document.createElement("div")
+    container.className = "bcp-color-picker"
 
-    const hsv = hexToHSV(initialColor);
-    const rgb = hexToRGB(initialColor);
-    const baseColor = hsvToHex({ h: hsv.h, s: 100, v: 100 });
+    const hsv = hexToHSV(initialColor)
+    const rgb = hexToRGB(initialColor)
+    const baseColor = hsvToHex({ h: hsv.h, s: 100, v: 100 })
 
     container.innerHTML = `
       <div class="bcp-picker-content">
@@ -47,32 +47,32 @@ export class PickerUI {
 
         <div class="bcp-recent-colors"></div>
       </div>
-    `;
+    `
 
-    return container;
+    return container
   }
 
   static updateRecentColorsDisplay(container, recentColors, onColorClick) {
-    const recentContainer = container.querySelector(".bcp-recent-colors");
+    const recentContainer = container.querySelector(".bcp-recent-colors")
 
     if (!recentColors || recentColors.length === 0) {
-      return;
+      return
     }
 
-    recentContainer.innerHTML = '<div class="bcp-recent-label">Recent:</div>';
+    recentContainer.innerHTML = '<div class="bcp-recent-label">Recent:</div>'
 
-    const swatchContainer = document.createElement("div");
-    swatchContainer.className = "bcp-recent-swatches";
+    const swatchContainer = document.createElement("div")
+    swatchContainer.className = "bcp-recent-swatches"
 
     recentColors.forEach((color) => {
-      const swatch = document.createElement("button");
-      swatch.className = "bcp-color-swatch";
-      swatch.style.backgroundColor = color;
-      swatch.title = color;
-      swatch.addEventListener("click", () => onColorClick(color));
-      swatchContainer.appendChild(swatch);
-    });
+      const swatch = document.createElement("button")
+      swatch.className = "bcp-color-swatch"
+      swatch.style.backgroundColor = color
+      swatch.title = color
+      swatch.addEventListener("click", () => onColorClick(color))
+      swatchContainer.appendChild(swatch)
+    })
 
-    recentContainer.appendChild(swatchContainer);
+    recentContainer.appendChild(swatchContainer)
   }
 }

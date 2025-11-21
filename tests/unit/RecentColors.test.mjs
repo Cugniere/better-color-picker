@@ -260,7 +260,11 @@ describe("RecentColorsManager", () => {
       const mgr2 = new RecentColorsManager(3)
       await mgr2.load()
       assert.strictEqual(mgr2.colors.length, 3)
-      assert.deepStrictEqual(mgr2.getColors(), ["#ff00ff", "#ffff00", "#0000ff"])
+      assert.deepStrictEqual(mgr2.getColors(), [
+        "#ff00ff",
+        "#ffff00",
+        "#0000ff",
+      ])
     })
 
     it("handles rapid additions", () => {
