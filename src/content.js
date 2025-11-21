@@ -4,7 +4,7 @@
  */
 
 import { PickerController } from "./picker/PickerController.js";
-import { RecentColorsManager } from "./storage/RecentColors.js";
+import { RecentColorsManager } from "./storage/RecentColors.mjs";
 
 (async function () {
   "use strict";
