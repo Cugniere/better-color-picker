@@ -2,7 +2,7 @@
  * Handles color picker DOM creation and UI updates
  */
 
-import { hexToHSV, hexToRGB, hsvToHex } from "../utils/ColorConversions.js";
+import { hexToHSV, hexToRGB, hsvToHex } from "../utils/ColorConversions.mjs";
 
 export class PickerUI {
   static createPickerElement(initialColor) {

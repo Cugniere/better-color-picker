@@ -2,7 +2,7 @@
  * Handles all user interactions with the color picker
  */
 
-import { hexToHSV, hsvToHex } from "../utils/ColorConversions.js";
+import { hexToHSV, hsvToHex } from "../utils/ColorConversions.mjs";
 
 export class PickerInteractions {
   constructor(container, currentInput, onColorChange) {
