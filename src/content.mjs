@@ -3,7 +3,7 @@
  * Intercepts native color inputs and replaces them with a custom picker
  */
 
-import { PickerController } from "./picker/PickerController.js";
+import { PickerController } from "./picker/PickerController.mjs";
 import { RecentColorsManager } from "./storage/RecentColors.mjs";
 
 (async function () {

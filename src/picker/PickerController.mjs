@@ -2,9 +2,9 @@
  * Orchestrates the color picker lifecycle and coordinates all modules
  */
 
-import { PickerUI } from "./PickerUI.js";
-import { PickerInteractions } from "./PickerInteractions.js";
-import { PickerPositioning } from "./PickerPositioning.js";
+import { PickerUI } from "./PickerUI.mjs";
+import { PickerInteractions } from "./PickerInteractions.mjs";
+import { PickerPositioning } from "./PickerPositioning.mjs";
 
 export class PickerController {
   constructor(recentColorsManager) {
