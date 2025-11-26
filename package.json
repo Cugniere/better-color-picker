@@ -1,0 +1,31 @@
+{
+  "name": "better-input-color",
+  "version": "1.0.0",
+  "description": "A Firefox extension that replaces the native OS color picker with a custom, feature-rich color picker.",
+  "main": "vite.config.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "build": "vite build",
+    "test:unit": "node --test --test-name-pattern tests/unit/*.mjs",
+    "test:e2e": "playwright test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Cugniere/better-color-picker.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Cugniere/better-color-picker/issues"
+  },
+  "homepage": "https://github.com/Cugniere/better-color-picker#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.56.1",
+    "@types/node": "^24.10.1",
+    "vite": "^7.2.4"
+  }
+}

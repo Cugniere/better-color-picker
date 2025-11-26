@@ -1,0 +1,32 @@
+{
+  "manifest_version": 3,
+  "name": "Better Color Picker",
+  "version": "1.0.0",
+  "description": "Custom color picker for color inputs with advanced features",
+  "icons": {
+    "48": "icons/palette-48.png",
+    "96": "icons/palette-96.png",
+    "128": "icons/palette-128.png"
+  },
+  "permissions": ["storage"],
+  "host_permissions": ["<all_urls>"],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["picker.css"],
+      "run_at": "document_start"
+    }
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "better-color-picker@cugniere.org",
+      "strict_min_version": "109.0",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
+    }
+  },
+  "author": "cugniere",
+  "homepage_url": "https://github.com/cugniere/better-color-picker"
+}

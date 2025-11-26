@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Better Color Picker - Test Page</title>
+    <style>
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        max-width: 800px;
+        margin: 50px auto;
+        padding: 20px;
+        line-height: 1.6;
+        background: #ffffff;
+        color: #333;
+        transition:
+          background-color 0.3s,
+          color 0.3s;
+      }
+
+      h1 {
+        color: #333;
+        margin-bottom: 30px;
+      }
+
+      .test-section {
+        margin-bottom: 30px;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background: #f9f9f9;
+        transition:
+          background-color 0.3s,
+          border-color 0.3s;
+      }
+
+      .test-section h2 {
+        margin-top: 0;
+        color: #555;
+        font-size: 18px;
+      }
+
+      .input-group {
+        margin-bottom: 15px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+        color: #333;
+      }
+
+      input[type="color"] {
+        width: 60px;
+        height: 40px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: border-color 0.3s;
+      }
+
+      .color-display {
+        margin-top: 10px;
+        padding: 10px;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-family: monospace;
+        transition:
+          background-color 0.3s,
+          border-color 0.3s;
+      }
+
+      code {
+        background: #e8e8e8;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-size: 0.9em;
+        transition: background-color 0.3s;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        body {
+          background: #121212;
+          color: #e0e0e0;
+        }
+
+        h1 {
+          color: #e0e0e0;
+        }
+
+        .test-section {
+          background: #1e1e1e;
+          border-color: #3e3e42;
+        }
+
+        .test-section h2 {
+          color: #c0c0c0;
+        }
+
+        label {
+          color: #e0e0e0;
+        }
+
+        input[type="color"] {
+          border-color: #3e3e42;
+        }
+
+        .color-display {
+          background: #2d2d30;
+          border-color: #3e3e42;
+          color: #e0e0e0;
+        }
+
+        code {
+          background: #2d2d30;
+          color: #e0e0e0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Better Color Picker - Test Page</h1>
+
+    <div class="test-section">
+      <h2>Basic Color Input</h2>
+      <div class="input-group">
+        <label for="color1">Choose a color:</label>
+        <input type="color" id="color1" value="#ff0000" />
+        <div class="color-display">
+          Selected: <span id="color1-value">#ff0000</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="test-section">
+      <h2>Color Input with Initial Value</h2>
+      <div class="input-group">
+        <label for="color2">Background color:</label>
+        <input type="color" id="color2" value="#3498db" />
+        <div class="color-display">
+          Selected: <span id="color2-value">#3498db</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="test-section">
+      <h2>Multiple Color Inputs</h2>
+      <div class="input-group">
+        <label for="color3">Primary color:</label>
+        <input type="color" id="color3" value="#2ecc71" />
+        <div class="color-display">
+          Selected: <span id="color3-value">#2ecc71</span>
+        </div>
+      </div>
+      <div class="input-group">
+        <label for="color4">Secondary color:</label>
+        <input type="color" id="color4" value="#e74c3c" />
+        <div class="color-display">
+          Selected: <span id="color4-value">#e74c3c</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="test-section">
+      <h2>Edge Cases</h2>
+      <div class="input-group">
+        <label for="color6">Black:</label>
+        <input type="color" id="color6" value="#000000" />
+        <div class="color-display">
+          Selected: <span id="color6-value">#000000</span>
+        </div>
+      </div>
+      <div class="input-group">
+        <label for="color7">White:</label>
+        <input type="color" id="color7" value="#ffffff" />
+        <div class="color-display">
+          Selected: <span id="color7-value">#ffffff</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="test-section">
+      <h2>Testing Instructions</h2>
+      <ol>
+        <li>Click on any color input above</li>
+        <li>The custom color picker should appear instead of the OS picker</li>
+        <li>Test the saturation/lightness area by clicking and dragging</li>
+        <li>Test the hue slider</li>
+        <li>Test the eyedropper tool (if supported)</li>
+        <li>Enter a hex value directly in the hex input field</li>
+        <li>Select colors to build up the recent colors palette</li>
+        <li>Click a recent color to quickly apply it</li>
+      </ol>
+    </div>
+
+    <script>
+      // Update color displays when inputs change
+      document.querySelectorAll('input[type="color"]').forEach((input) => {
+        const valueDisplay = document.getElementById(input.id + "-value")
+
+        input.addEventListener("input", (e) => {
+          valueDisplay.textContent = e.target.value
+          valueDisplay.style.color = e.target.value
+        })
+
+        input.addEventListener("change", (e) => {
+          console.log(`${input.id} changed to:`, e.target.value)
+        })
+      })
+    </script>
+  </body>
+</html>

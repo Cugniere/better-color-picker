@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Color Picker Test Page</title>
+    <style>
+      body {
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+        padding: 20px;
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      .test-section {
+        margin: 40px 0;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+
+      .test-section h2 {
+        margin-top: 0;
+        font-size: 18px;
+        color: #333;
+      }
+
+      .input-group {
+        margin: 15px 0;
+      }
+
+      label {
+        display: inline-block;
+        min-width: 150px;
+        margin-right: 10px;
+      }
+
+      input[type="color"] {
+        vertical-align: middle;
+        cursor: pointer;
+      }
+
+      #edge-test {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        padding: 10px;
+        background: #f0f0f0;
+        border-radius: 4px;
+      }
+
+      #long-page {
+        height: 2000px;
+        padding: 20px;
+        background: linear-gradient(to bottom, #fff 0%, #f9f9f9 100%);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Color Picker Integration Tests</h1>
+
+    <!-- Basic Test -->
+    <div id="basic-test" class="test-section">
+      <h2>Basic Test</h2>
+      <div class="input-group">
+        <label for="color1">Basic Color Input:</label>
+        <input
+          type="color"
+          id="color1"
+          value="#ff0000"
+          data-testid="color-basic"
+        />
+      </div>
+    </div>
+
+    <!-- Multiple Inputs -->
+    <div id="multiple-test" class="test-section">
+      <h2>Multiple Inputs Test</h2>
+      <div class="input-group">
+        <label for="color2">Color Input 2:</label>
+        <input type="color" id="color2" value="#00ff00" data-testid="color-2" />
+      </div>
+      <div class="input-group">
+        <label for="color3">Color Input 3:</label>
+        <input type="color" id="color3" value="#0000ff" data-testid="color-3" />
+      </div>
+      <div class="input-group">
+        <label for="color4">Color Input 4:</label>
+        <input type="color" id="color4" value="#ffff00" data-testid="color-4" />
+      </div>
+    </div>
+
+    <!-- Edge Cases - Bottom Right -->
+    <div id="edge-test">
+      <label for="color-bottom-right">Bottom Right:</label>
+      <input
+        type="color"
+        id="color-bottom-right"
+        value="#ff00ff"
+        data-testid="color-edge"
+      />
+    </div>
+
+    <!-- Long Page for Scroll Testing -->
+    <div id="long-page">
+      <h2>Scroll Test (at bottom of page)</h2>
+      <div class="input-group">
+        <label for="color-scrolled">Scrolled Color Input:</label>
+        <input
+          type="color"
+          id="color-scrolled"
+          value="#00ffff"
+          data-testid="color-scrolled"
+        />
+      </div>
+    </div>
+  </body>
+</html>
