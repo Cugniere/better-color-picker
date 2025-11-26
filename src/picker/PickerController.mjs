@@ -5,6 +5,7 @@
 import { PickerUI } from "./PickerUI.mjs"
 import { PickerInteractions } from "./PickerInteractions.mjs"
 import { PickerPositioning } from "./PickerPositioning.mjs"
+import { Eyedropper } from "./Eyedropper.mjs"
 
 export class PickerController {
   constructor(recentColorsManager) {
@@ -43,6 +44,9 @@ export class PickerController {
       this._handleColorChange.bind(this),
     )
     this.interactions.setup()
+
+    // Setup eyedropper button
+    this._setupEyedropper()
 
     // Update recent colors display
     PickerUI.updateRecentColorsDisplay(
@@ -90,11 +94,42 @@ export class PickerController {
     this.currentInput = null
   }
 
+  _setupEyedropper() {
+    const eyedropperBtn = this.pickerElement.querySelector(
+      ".bcp-eyedropper-btn",
+    )
+
+    if (eyedropperBtn) {
+      eyedropperBtn.addEventListener("click", async () => {
+        const color = await Eyedropper.activate()
+
+        if (color && this.currentInput) {
+          this.currentInput.value = color
+          this.currentInput.dispatchEvent(new Event("input", { bubbles: true }))
+          this.currentInput.dispatchEvent(
+            new Event("change", { bubbles: true }),
+          )
+
+          // Update picker UI with new color
+          if (this.interactions) {
+            this.interactions.updateFromHex(color)
+          }
+        }
+      })
+    }
+  }
+
   _handleOutsideClick(e) {
+    // Check if click is on eyedropper overlay (don't close while eyedropper is active)
+    const isEyedropperClick =
+      e.target.closest(".bcp-eyedropper-overlay") ||
+      e.target.classList.contains("bcp-eyedropper-overlay")
+
     if (
       this.pickerElement &&
       !this.pickerElement.contains(e.target) &&
-      e.target !== this.currentInput
+      e.target !== this.currentInput &&
+      !isEyedropperClick
     ) {
       this.close()
     }

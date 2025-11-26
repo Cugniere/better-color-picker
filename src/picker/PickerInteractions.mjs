@@ -186,4 +186,29 @@ export class PickerInteractions {
       this.currentInput.dispatchEvent(new Event("change", { bubbles: true }))
     }
   }
+
+  /**
+   * Update picker UI from a hex color (for eyedropper, recent colors, etc.)
+   * @param {string} hexColor - Hex color value
+   */
+  updateFromHex(hexColor) {
+    const hsv = hexToHSV(hexColor)
+    this.currentHSV = hsv
+
+    // Update saturation/lightness cursor position
+    this.slCursor.style.left = hsv.s + "%"
+    this.slCursor.style.top = 100 - hsv.v + "%"
+
+    // Update hue slider position
+    this.hueThumb.style.left = (hsv.h / 360) * 100 + "%"
+
+    // Update saturation/lightness area background
+    const baseColor = hsvToHex({ h: hsv.h, s: 100, v: 100 })
+    this.slArea.style.backgroundColor = baseColor
+    this.slArea.setAttribute("data-hue", hsv.h)
+
+    // Update hex input and preview
+    this.hexInput.value = hexColor.toUpperCase()
+    this.previewColor.style.backgroundColor = hexColor
+  }
 }

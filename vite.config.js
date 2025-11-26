@@ -6,10 +6,13 @@ export default defineConfig({
   build: {
     outDir: "dist",
     rollupOptions: {
-      input: "src/content.mjs",
+      input: {
+        content: "src/content.mjs",
+        background: "src/background.js",
+      },
       output: {
-        entryFileNames: "content.js",
-        format: "iife",
+        entryFileNames: "[name].js",
+        format: "es",
       },
     },
   },

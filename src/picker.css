@@ -171,6 +171,12 @@
   flex-shrink: 0;
 }
 
+.bcp-tool-preview-inner {
+  display: flex;
+  align-items: center;
+  gap: var(--bcp-gap-small);
+}
+
 .bcp-color-preview {
   position: relative;
   width: var(--bcp-color-preview);
@@ -372,4 +378,115 @@
 
 .bcp-color-swatch:active {
   transform: scale(1.05) translateY(0);
+}
+
+/* ===== Eyedropper Button ===== */
+.bcp-eyedropper-btn {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  padding: 6px;
+  border: 1px solid var(--bcp-border);
+  border-radius: var(--bcp-border-radius-small);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.8),
+    rgba(245, 245, 246, 0.6)
+  );
+  backdrop-filter: blur(10px);
+  color: var(--bcp-text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.bcp-eyedropper-btn:hover {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: var(--bcp-focus-color);
+  color: var(--bcp-focus-color);
+}
+
+.bcp-eyedropper-btn:active {
+  transform: scale(0.95);
+}
+
+.bcp-eyedropper-btn svg {
+  display: block;
+}
+
+@media (prefers-color-scheme: dark) {
+  .bcp-eyedropper-btn {
+    background: linear-gradient(
+      135deg,
+      rgba(42, 42, 46, 0.8),
+      rgba(32, 32, 35, 0.6)
+    );
+    color: #c2c2c2;
+  }
+
+  .bcp-eyedropper-btn:hover {
+    background: rgba(42, 42, 46, 0.95);
+  }
+}
+
+/* ===== Eyedropper Overlay ===== */
+.bcp-eyedropper-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 2147483647;
+  cursor: crosshair;
+  background: rgba(0, 0, 0, 0.01);
+}
+
+.bcp-eyedropper-overlay canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.bcp-eyedropper-preview {
+  position: fixed;
+  pointer-events: none;
+  background: white;
+  border: 2px solid #333;
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--bcp-font-family);
+}
+
+.bcp-eyedropper-zoom-canvas {
+  display: block;
+  width: 126px;
+  height: 126px;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+.bcp-eyedropper-preview-color {
+  width: 48px;
+  height: 48px;
+  border-radius: 6px;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.bcp-eyedropper-preview-text {
+  font-family: var(--bcp-font-mono);
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  letter-spacing: 0.5px;
 }
