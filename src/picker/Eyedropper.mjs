@@ -86,13 +86,46 @@ export class Eyedropper {
 
         if (color) {
           preview.style.display = "flex"
-          preview.style.left = e.clientX + 20 + "px"
-          preview.style.top = e.clientY + 20 + "px"
           previewColor.style.backgroundColor = color
           previewText.textContent = color.toUpperCase()
 
           // Draw zoomed preview
           this.drawZoomPreview(ctx, zoomCtx, x, y, zoomCanvas.width)
+
+          // Position preview dynamically to keep it on screen
+          const offset = 20
+          const padding = 10
+          const previewRect = preview.getBoundingClientRect()
+          const viewportWidth = window.innerWidth
+          const viewportHeight = window.innerHeight
+
+          let left = e.clientX + offset
+          let top = e.clientY + offset
+
+          // Check if preview goes off the right edge
+          if (left + previewRect.width + padding > viewportWidth) {
+            // Position to the left of cursor instead
+            left = e.clientX - previewRect.width - offset
+          }
+
+          // Check if preview goes off the bottom edge
+          if (top + previewRect.height + padding > viewportHeight) {
+            // Position above cursor instead
+            top = e.clientY - previewRect.height - offset
+          }
+
+          // Ensure preview doesn't go off the left edge
+          if (left < padding) {
+            left = padding
+          }
+
+          // Ensure preview doesn't go off the top edge
+          if (top < padding) {
+            top = padding
+          }
+
+          preview.style.left = left + "px"
+          preview.style.top = top + "px"
         }
       }
 
