@@ -1,6 +1,6 @@
 {
   "name": "better-input-color",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A Firefox extension that replaces the native OS color picker with a custom, feature-rich color picker.",
   "main": "vite.config.js",
   "directories": {
