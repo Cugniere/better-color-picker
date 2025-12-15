@@ -17,7 +17,8 @@
       "matches": ["<all_urls>"],
       "js": ["content.js"],
       "css": ["picker.css"],
-      "run_at": "document_start"
+      "run_at": "document_start",
+      "all_frames": true
     }
   ],
   "browser_specific_settings": {
