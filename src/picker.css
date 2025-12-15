@@ -108,8 +108,7 @@
   }
 }
 
-.bcp-color-picker *,
-.bcp-color-picker button {
+.bcp-color-picker *{
   box-sizing: border-box;
   margin: 0;
   padding: 0;
