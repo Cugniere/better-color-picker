@@ -4,7 +4,7 @@
 
 <h1 align="center">Better Color Picker</h1>
 <p align="center">
-  A Firefox extension that replaces the native color picker with a custom, feature-rich interface.
+  Replaces Firefox's native color picker for <code>&lt;input type="color"&gt;</code> with a modern interface.
 </p>
 <p align="center">
   <img src="assets/media/cover.png" alt="Better Color Picker screenshot">
@@ -14,20 +14,22 @@
 
 - Gradient-based saturation/lightness selector
 - Hue slider with rainbow gradient
-- Hex color input with live validation
+- Multiple color formats (HEX, RGB, HSL) with toggle button
+- Eyedropper tool to pick colors from the page
 - Recent colors (automatically saves up to 14)
+- Dark mode support
 - Works on all websites with `<input type="color">`
 
 ## Installation
 
-### From AMO (Firefox Add-ons)
+### From Firefox Add-ons
 
-Coming soon
+[Install from addons.mozilla.org](https://addons.mozilla.org/en-US/firefox/addon/better-color-picker)
 
 ## Development
 
 1. Clone this repository
-2. Runs the following commands
+2. Run the following commands
 
 ```bash
 npm install
@@ -40,8 +42,8 @@ npm run build
 To run tests:
 
 ```bash
-npm test         # Run unit tests
-npm run test:e2e # Run e2e tests
+npm run test:unit # Run unit tests
+npm run test:e2e  # Run e2e tests
 ```
 
 ## Requirements
