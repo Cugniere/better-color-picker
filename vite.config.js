@@ -1,6 +1,6 @@
 // vite.config.js
-import { defineConfig } from "vite";
-import { copyFileSync } from "fs";
+import { defineConfig } from "vite"
+import { copyFileSync } from "fs"
 
 export default defineConfig({
   build: {
@@ -20,9 +20,9 @@ export default defineConfig({
     {
       name: "copy-files",
       closeBundle() {
-        copyFileSync("src/manifest.json", "dist/manifest.json");
-        copyFileSync("src/picker.css", "dist/picker.css");
+        copyFileSync("src/manifest.json", "dist/manifest.json")
+        copyFileSync("src/picker.css", "dist/picker.css")
       },
     },
   ],
-});
+})
