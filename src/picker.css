@@ -265,16 +265,72 @@
   transition: transform 0.1s ease;
 }
 
-.bcp-hex-input-row {
+.bcp-color-input-row {
   display: flex;
   gap: var(--bcp-gap-small);
   align-items: center;
-
   padding-left: var(--bcp-padding);
   padding-right: var(--bcp-padding);
 }
 
-.bcp-hex-input {
+.bcp-format-toggle {
+  flex-shrink: 0;
+  padding: var(--bcp-gap-tiny) var(--bcp-gap-small);
+  min-width: 44px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.8),
+    rgba(245, 245, 246, 0.6)
+  );
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--bcp-border);
+  border-radius: var(--bcp-border-radius-small);
+  font-family: var(--bcp-font-mono);
+  font-size: var(--bcp-font-size-tiny);
+  font-weight: 600;
+  color: var(--bcp-text-secondary);
+  cursor: pointer;
+  outline: none;
+  transition: all 0.15s ease;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.bcp-format-toggle:hover {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: var(--bcp-focus-color);
+  color: var(--bcp-focus-color);
+}
+
+.bcp-format-toggle:active {
+  transform: scale(0.95);
+}
+
+@media (prefers-color-scheme: dark) {
+  .bcp-format-toggle {
+    background: linear-gradient(
+      135deg,
+      rgba(42, 42, 46, 0.8),
+      rgba(32, 32, 35, 0.6)
+    );
+    color: #c2c2c2;
+  }
+
+  .bcp-format-toggle:hover {
+    background: rgba(42, 42, 46, 0.95);
+  }
+}
+
+.bcp-input-container {
+  flex: 1;
+  display: flex;
+  gap: var(--bcp-gap-tiny);
+}
+
+.bcp-input-container.bcp-hidden {
+  display: none;
+}
+
+.bcp-color-input {
   flex: 1;
   padding: var(--bcp-gap-tiny);
   background: linear-gradient(
@@ -288,13 +344,34 @@
   font-family: var(--bcp-font-mono);
   font-size: var(--bcp-font-size-small);
   text-align: center;
-  text-transform: uppercase;
   outline: none;
   transition: all 0.2s ease;
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-.bcp-hex-input:focus {
+.bcp-hex-input {
+  text-transform: uppercase;
+}
+
+.bcp-rgb-input,
+.bcp-hsl-input {
+  min-width: 0;
+}
+
+.bcp-rgb-input::-webkit-inner-spin-button,
+.bcp-rgb-input::-webkit-outer-spin-button,
+.bcp-hsl-input::-webkit-inner-spin-button,
+.bcp-hsl-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.bcp-rgb-input,
+.bcp-hsl-input {
+  -moz-appearance: textfield;
+}
+
+.bcp-color-input:focus {
   border-color: var(--bcp-focus-color);
   box-shadow:
     var(--bcp-shadow-focus),
@@ -303,7 +380,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  .bcp-hex-input {
+  .bcp-color-input {
     background: linear-gradient(
       135deg,
       rgba(42, 42, 46, 0.8),
@@ -312,9 +389,13 @@
     color: #fff;
   }
 
-  .bcp-hex-input:focus {
+  .bcp-color-input:focus {
     background: rgba(42, 42, 46, 0.95);
   }
+}
+
+.bcp-hidden {
+  display: none;
 }
 
 .bcp-recent-colors {

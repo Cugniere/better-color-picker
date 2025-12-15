@@ -2,7 +2,15 @@
  * Handles all user interactions with the color picker
  */
 
-import { hexToHSV, hsvToHex } from "../utils/ColorConversions.mjs"
+import {
+  hexToHSV,
+  hsvToHex,
+  hexToRGB,
+  hsvToRGB,
+  hexToHSL,
+  hslToHex,
+  rgbToHSL,
+} from "../utils/ColorConversions.mjs"
 
 export class PickerInteractions {
   constructor(container, currentInput, onColorChange) {
@@ -10,6 +18,7 @@ export class PickerInteractions {
     this.currentInput = currentInput
     this.onColorChange = onColorChange
     this.currentHSV = { h: 0, s: 100, v: 100 }
+    this.currentFormat = "hex" // 'hex' or 'rgb'
 
     // DOM elements
     this.slArea = container.querySelector(".bcp-saturation-lightness")
@@ -17,6 +26,16 @@ export class PickerInteractions {
     this.hueSlider = container.querySelector(".bcp-hue-slider")
     this.hueThumb = this.hueSlider.querySelector(".bcp-slider-thumb")
     this.hexInput = container.querySelector(".bcp-hex-input")
+    this.rgbInputR = container.querySelectorAll(".bcp-rgb-input")[0]
+    this.rgbInputG = container.querySelectorAll(".bcp-rgb-input")[1]
+    this.rgbInputB = container.querySelectorAll(".bcp-rgb-input")[2]
+    this.hslInputH = container.querySelectorAll(".bcp-hsl-input")[0]
+    this.hslInputS = container.querySelectorAll(".bcp-hsl-input")[1]
+    this.hslInputL = container.querySelectorAll(".bcp-hsl-input")[2]
+    this.formatToggle = container.querySelector(".bcp-format-toggle")
+    this.hexContainer = container.querySelector(".bcp-hex-container")
+    this.rgbContainer = container.querySelector(".bcp-rgb-container")
+    this.hslContainer = container.querySelector(".bcp-hsl-container")
     this.previewColor = container.querySelector(".bcp-preview-color")
 
     // Dragging state
@@ -30,6 +49,11 @@ export class PickerInteractions {
       hexInput: this._handleHexInput.bind(this),
       hexKeydown: this._handleHexKeydown.bind(this),
       hexBlur: this._handleHexBlur.bind(this),
+      rgbInput: this._handleRGBInput.bind(this),
+      rgbKeydown: this._handleRGBKeydown.bind(this),
+      hslInput: this._handleHSLInput.bind(this),
+      hslKeydown: this._handleHSLKeydown.bind(this),
+      formatToggleClick: this._handleFormatToggle.bind(this),
       mouseMove: this._handleMouseMove.bind(this),
       mouseUp: this._handleMouseUp.bind(this),
     }
@@ -50,6 +74,22 @@ export class PickerInteractions {
     this.hexInput.addEventListener("input", this.boundHandlers.hexInput)
     this.hexInput.addEventListener("keydown", this.boundHandlers.hexKeydown)
     this.hexInput.addEventListener("blur", this.boundHandlers.hexBlur)
+    this.rgbInputR.addEventListener("input", this.boundHandlers.rgbInput)
+    this.rgbInputG.addEventListener("input", this.boundHandlers.rgbInput)
+    this.rgbInputB.addEventListener("input", this.boundHandlers.rgbInput)
+    this.rgbInputR.addEventListener("keydown", this.boundHandlers.rgbKeydown)
+    this.rgbInputG.addEventListener("keydown", this.boundHandlers.rgbKeydown)
+    this.rgbInputB.addEventListener("keydown", this.boundHandlers.rgbKeydown)
+    this.hslInputH.addEventListener("input", this.boundHandlers.hslInput)
+    this.hslInputS.addEventListener("input", this.boundHandlers.hslInput)
+    this.hslInputL.addEventListener("input", this.boundHandlers.hslInput)
+    this.hslInputH.addEventListener("keydown", this.boundHandlers.hslKeydown)
+    this.hslInputS.addEventListener("keydown", this.boundHandlers.hslKeydown)
+    this.hslInputL.addEventListener("keydown", this.boundHandlers.hslKeydown)
+    this.formatToggle.addEventListener(
+      "click",
+      this.boundHandlers.formatToggleClick,
+    )
     document.addEventListener("mousemove", this.boundHandlers.mouseMove)
     document.addEventListener("mouseup", this.boundHandlers.mouseUp)
   }
@@ -63,6 +103,22 @@ export class PickerInteractions {
     this.hexInput.removeEventListener("input", this.boundHandlers.hexInput)
     this.hexInput.removeEventListener("keydown", this.boundHandlers.hexKeydown)
     this.hexInput.removeEventListener("blur", this.boundHandlers.hexBlur)
+    this.rgbInputR.removeEventListener("input", this.boundHandlers.rgbInput)
+    this.rgbInputG.removeEventListener("input", this.boundHandlers.rgbInput)
+    this.rgbInputB.removeEventListener("input", this.boundHandlers.rgbInput)
+    this.rgbInputR.removeEventListener("keydown", this.boundHandlers.rgbKeydown)
+    this.rgbInputG.removeEventListener("keydown", this.boundHandlers.rgbKeydown)
+    this.rgbInputB.removeEventListener("keydown", this.boundHandlers.rgbKeydown)
+    this.hslInputH.removeEventListener("input", this.boundHandlers.hslInput)
+    this.hslInputS.removeEventListener("input", this.boundHandlers.hslInput)
+    this.hslInputL.removeEventListener("input", this.boundHandlers.hslInput)
+    this.hslInputH.removeEventListener("keydown", this.boundHandlers.hslKeydown)
+    this.hslInputS.removeEventListener("keydown", this.boundHandlers.hslKeydown)
+    this.hslInputL.removeEventListener("keydown", this.boundHandlers.hslKeydown)
+    this.formatToggle.removeEventListener(
+      "click",
+      this.boundHandlers.formatToggleClick,
+    )
     document.removeEventListener("mousemove", this.boundHandlers.mouseMove)
     document.removeEventListener("mouseup", this.boundHandlers.mouseUp)
   }
@@ -166,15 +222,140 @@ export class PickerInteractions {
     this._updateColorDisplay()
   }
 
-  _updateColorDisplay(updateHexInput = true) {
+  _handleRGBInput() {
+    const r = parseInt(this.rgbInputR.value) || 0
+    const g = parseInt(this.rgbInputG.value) || 0
+    const b = parseInt(this.rgbInputB.value) || 0
+
+    // Clamp values
+    const rClamped = Math.max(0, Math.min(255, r))
+    const gClamped = Math.max(0, Math.min(255, g))
+    const bClamped = Math.max(0, Math.min(255, b))
+
+    // Convert RGB to HSV
+    const hexColor =
+      "#" +
+      [rClamped, gClamped, bClamped]
+        .map((x) => x.toString(16).padStart(2, "0"))
+        .join("")
+
+    const hsv = hexToHSV(hexColor)
+    this.currentHSV = hsv
+
+    // Update UI
+    this.slCursor.style.left = hsv.s + "%"
+    this.slCursor.style.top = 100 - hsv.v + "%"
+    this.hueThumb.style.left = (hsv.h / 360) * 100 + "%"
+    this.slArea.setAttribute("data-hue", hsv.h)
+    this.slArea.style.backgroundColor = hsvToHex({
+      h: hsv.h,
+      s: 100,
+      v: 100,
+    })
+
+    this._updateColorDisplay(false) // Don't update RGB inputs to avoid cursor jump
+  }
+
+  _handleRGBKeydown(e) {
+    if (e.key === "Enter") {
+      e.preventDefault()
+      if (this.onColorChange) {
+        this.onColorChange("close")
+      }
+    }
+  }
+
+  _handleHSLInput() {
+    const h = parseInt(this.hslInputH.value) || 0
+    const s = parseInt(this.hslInputS.value) || 0
+    const l = parseInt(this.hslInputL.value) || 0
+
+    // Clamp values
+    const hClamped = Math.max(0, Math.min(360, h))
+    const sClamped = Math.max(0, Math.min(100, s))
+    const lClamped = Math.max(0, Math.min(100, l))
+
+    // Convert HSL to hex
+    const hexColor = hslToHex({ h: hClamped, s: sClamped, l: lClamped })
+
+    const hsv = hexToHSV(hexColor)
+    this.currentHSV = hsv
+
+    // Update UI
+    this.slCursor.style.left = hsv.s + "%"
+    this.slCursor.style.top = 100 - hsv.v + "%"
+    this.hueThumb.style.left = (hsv.h / 360) * 100 + "%"
+    this.slArea.setAttribute("data-hue", hsv.h)
+    this.slArea.style.backgroundColor = hsvToHex({
+      h: hsv.h,
+      s: 100,
+      v: 100,
+    })
+
+    this._updateColorDisplay(false) // Don't update HSL inputs to avoid cursor jump
+  }
+
+  _handleHSLKeydown(e) {
+    if (e.key === "Enter") {
+      e.preventDefault()
+      if (this.onColorChange) {
+        this.onColorChange("close")
+      }
+    }
+  }
+
+  _handleFormatToggle() {
+    if (this.currentFormat === "hex") {
+      // Switch to RGB
+      this.currentFormat = "rgb"
+      this.formatToggle.textContent = "RGB"
+      this.hexContainer.classList.add("bcp-hidden")
+      this.rgbContainer.classList.remove("bcp-hidden")
+      this.hslContainer.classList.add("bcp-hidden")
+    } else if (this.currentFormat === "rgb") {
+      // Switch to HSL
+      this.currentFormat = "hsl"
+      this.formatToggle.textContent = "HSL"
+      this.hexContainer.classList.add("bcp-hidden")
+      this.rgbContainer.classList.add("bcp-hidden")
+      this.hslContainer.classList.remove("bcp-hidden")
+    } else {
+      // Switch to HEX
+      this.currentFormat = "hex"
+      this.formatToggle.textContent = "HEX"
+      this.hexContainer.classList.remove("bcp-hidden")
+      this.rgbContainer.classList.add("bcp-hidden")
+      this.hslContainer.classList.add("bcp-hidden")
+    }
+    this._updateColorDisplay()
+  }
+
+  _updateColorDisplay(updateInputs = true) {
     if (!this.currentInput) {
       return // Picker was closed, stop updating
     }
 
     const hexColor = hsvToHex(this.currentHSV)
+    const rgb = hsvToRGB(
+      this.currentHSV.h,
+      this.currentHSV.s,
+      this.currentHSV.v,
+    )
+    const hsl = rgbToHSL(rgb.r, rgb.g, rgb.b)
 
-    if (updateHexInput) {
+    if (updateInputs) {
+      // Update hex input
       this.hexInput.value = hexColor.toUpperCase()
+
+      // Update RGB inputs
+      this.rgbInputR.value = rgb.r
+      this.rgbInputG.value = rgb.g
+      this.rgbInputB.value = rgb.b
+
+      // Update HSL inputs
+      this.hslInputH.value = Math.round(hsl.h)
+      this.hslInputS.value = Math.round(hsl.s)
+      this.hslInputL.value = Math.round(hsl.l)
     }
 
     this.previewColor.style.backgroundColor = hexColor
@@ -207,8 +388,22 @@ export class PickerInteractions {
     this.slArea.style.backgroundColor = baseColor
     this.slArea.setAttribute("data-hue", hsv.h)
 
-    // Update hex input and preview
+    // Update hex input
     this.hexInput.value = hexColor.toUpperCase()
+
+    // Update RGB inputs
+    const rgb = hsvToRGB(hsv.h, hsv.s, hsv.v)
+    this.rgbInputR.value = rgb.r
+    this.rgbInputG.value = rgb.g
+    this.rgbInputB.value = rgb.b
+
+    // Update HSL inputs
+    const hsl = rgbToHSL(rgb.r, rgb.g, rgb.b)
+    this.hslInputH.value = Math.round(hsl.h)
+    this.hslInputS.value = Math.round(hsl.s)
+    this.hslInputL.value = Math.round(hsl.l)
+
+    // Update preview
     this.previewColor.style.backgroundColor = hexColor
   }
 }

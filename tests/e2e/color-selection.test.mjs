@@ -214,9 +214,9 @@ test.describe("Color Selection Flow", () => {
     // Try to type invalid hex
     await setPickerHexValue(page, "invalid")
 
-    // Click on the hex input row label area (trigger blur without changing color)
-    const hexInputRow = page.locator(".bcp-hex-input-row")
-    await hexInputRow.click({ position: { x: 5, y: 5 } })
+    // Click on the color input row label area (trigger blur without changing color)
+    const colorInputRow = page.locator(".bcp-color-input-row")
+    await colorInputRow.click({ position: { x: 5, y: 5 } })
 
     // Wait a bit
     await page.waitForTimeout(100)

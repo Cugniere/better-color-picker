@@ -6,6 +6,10 @@ import {
   rgbToHSV,
   hsvToRGB,
   hsvToHex,
+  rgbToHSL,
+  hslToRGB,
+  hexToHSL,
+  hslToHex,
 } from "../../src/utils/ColorConversions.mjs"
 
 function assertHSVClose(actual, expected, tolerance = 0.5) {
@@ -14,6 +18,15 @@ function assertHSVClose(actual, expected, tolerance = 0.5) {
       Math.abs(actual.s - expected.s) <= tolerance &&
       Math.abs(actual.v - expected.v) <= tolerance,
     `Expected HSV close to ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`,
+  )
+}
+
+function assertHSLClose(actual, expected, tolerance = 0.5) {
+  assert.ok(
+    Math.abs(actual.h - expected.h) <= tolerance &&
+      Math.abs(actual.s - expected.s) <= tolerance &&
+      Math.abs(actual.l - expected.l) <= tolerance,
+    `Expected HSL close to ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`,
   )
 }
 
@@ -748,6 +761,479 @@ describe("hsvToHex", () => {
 
     it("handles fractional HSV values", () => {
       const result = hsvToHex({ h: 123.456, s: 78.9, v: 45.6 })
+      assert.ok(result.startsWith("#"))
+      assert.strictEqual(result.length, 7)
+    })
+  })
+})
+
+describe("rgbToHSL", () => {
+  describe("Primary Colors", () => {
+    it("converts red RGB", () => {
+      assertHSLClose(rgbToHSL(255, 0, 0), { h: 0, s: 100, l: 50 })
+    })
+
+    it("converts green RGB", () => {
+      assertHSLClose(rgbToHSL(0, 255, 0), { h: 120, s: 100, l: 50 })
+    })
+
+    it("converts blue RGB", () => {
+      assertHSLClose(rgbToHSL(0, 0, 255), { h: 240, s: 100, l: 50 })
+    })
+  })
+
+  describe("Secondary Colors", () => {
+    it("converts cyan RGB", () => {
+      assertHSLClose(rgbToHSL(0, 255, 255), { h: 180, s: 100, l: 50 })
+    })
+
+    it("converts magenta RGB", () => {
+      assertHSLClose(rgbToHSL(255, 0, 255), { h: 300, s: 100, l: 50 })
+    })
+
+    it("converts yellow RGB", () => {
+      assertHSLClose(rgbToHSL(255, 255, 0), { h: 60, s: 100, l: 50 })
+    })
+  })
+
+  describe("Achromatic Colors", () => {
+    it("converts black RGB", () => {
+      assertHSLClose(rgbToHSL(0, 0, 0), { h: 0, s: 0, l: 0 })
+    })
+
+    it("converts white RGB", () => {
+      assertHSLClose(rgbToHSL(255, 255, 255), { h: 0, s: 0, l: 100 })
+    })
+
+    it("converts gray RGB", () => {
+      const result = rgbToHSL(128, 128, 128)
+      assert.ok(result.s === 0)
+      assertHSLClose(result, { h: 0, s: 0, l: 50.2 }, 0.5)
+    })
+  })
+
+  describe("Lightness Variations", () => {
+    it("converts light red", () => {
+      const result = rgbToHSL(255, 128, 128)
+      assertHSLClose(result, { h: 0, s: 100, l: 75.1 }, 1)
+    })
+
+    it("converts dark red", () => {
+      const result = rgbToHSL(128, 0, 0)
+      assertHSLClose(result, { h: 0, s: 100, l: 25.1 }, 1)
+    })
+
+    it("converts very light color", () => {
+      const result = rgbToHSL(240, 240, 240)
+      assert.ok(result.l > 90)
+    })
+
+    it("converts very dark color", () => {
+      const result = rgbToHSL(10, 10, 10)
+      assert.ok(result.l < 5)
+    })
+  })
+
+  describe("Saturation Variations", () => {
+    it("converts desaturated red", () => {
+      const result = rgbToHSL(200, 150, 150)
+      assert.ok(result.h >= 0 && result.h <= 1)
+      assert.ok(result.s < 50)
+    })
+
+    it("converts low saturation", () => {
+      const result = rgbToHSL(100, 95, 95)
+      assert.ok(result.s < 10)
+    })
+
+    it("converts full saturation", () => {
+      const result = rgbToHSL(255, 0, 0)
+      assert.strictEqual(result.s, 100)
+    })
+  })
+
+  describe("Edge Cases", () => {
+    it("handles maximum RGB values", () => {
+      const result = rgbToHSL(255, 255, 255)
+      assertHSLClose(result, { h: 0, s: 0, l: 100 })
+    })
+
+    it("handles minimum RGB values", () => {
+      const result = rgbToHSL(0, 0, 0)
+      assertHSLClose(result, { h: 0, s: 0, l: 0 })
+    })
+
+    it("handles equal RGB values (gray)", () => {
+      const result = rgbToHSL(100, 100, 100)
+      assert.strictEqual(result.s, 0)
+    })
+  })
+
+  describe("Hue Calculation Accuracy", () => {
+    it("calculates hue correctly for red-dominant", () => {
+      const result = rgbToHSL(255, 100, 50)
+      assert.ok(result.h >= 0 && result.h < 60)
+    })
+
+    it("calculates hue correctly for green-dominant", () => {
+      const result = rgbToHSL(100, 255, 50)
+      assert.ok(result.h >= 60 && result.h < 180)
+    })
+
+    it("calculates hue correctly for blue-dominant", () => {
+      const result = rgbToHSL(50, 100, 255)
+      assert.ok(result.h >= 180 && result.h < 300)
+    })
+  })
+})
+
+describe("hslToRGB", () => {
+  describe("Primary Colors", () => {
+    it("converts red HSL", () => {
+      assert.deepStrictEqual(hslToRGB(0, 100, 50), { r: 255, g: 0, b: 0 })
+    })
+
+    it("converts green HSL", () => {
+      assert.deepStrictEqual(hslToRGB(120, 100, 50), { r: 0, g: 255, b: 0 })
+    })
+
+    it("converts blue HSL", () => {
+      assert.deepStrictEqual(hslToRGB(240, 100, 50), { r: 0, g: 0, b: 255 })
+    })
+  })
+
+  describe("Secondary Colors", () => {
+    it("converts cyan HSL", () => {
+      assert.deepStrictEqual(hslToRGB(180, 100, 50), { r: 0, g: 255, b: 255 })
+    })
+
+    it("converts magenta HSL", () => {
+      assert.deepStrictEqual(hslToRGB(300, 100, 50), { r: 255, g: 0, b: 255 })
+    })
+
+    it("converts yellow HSL", () => {
+      assert.deepStrictEqual(hslToRGB(60, 100, 50), { r: 255, g: 255, b: 0 })
+    })
+  })
+
+  describe("Achromatic Colors", () => {
+    it("converts black HSL", () => {
+      assert.deepStrictEqual(hslToRGB(0, 0, 0), { r: 0, g: 0, b: 0 })
+    })
+
+    it("converts white HSL", () => {
+      assert.deepStrictEqual(hslToRGB(0, 0, 100), { r: 255, g: 255, b: 255 })
+    })
+
+    it("converts gray HSL (any hue, 0 saturation)", () => {
+      const result = hslToRGB(180, 0, 50)
+      assert.ok(result.r === result.g && result.g === result.b)
+    })
+  })
+
+  describe("Lightness Variations", () => {
+    it("converts lightness 0% (black)", () => {
+      assert.deepStrictEqual(hslToRGB(180, 100, 0), { r: 0, g: 0, b: 0 })
+    })
+
+    it("converts lightness 25%", () => {
+      const result = hslToRGB(0, 100, 25)
+      assert.ok(result.r < 255)
+      assert.strictEqual(result.g, 0)
+      assert.strictEqual(result.b, 0)
+    })
+
+    it("converts lightness 50%", () => {
+      const result = hslToRGB(0, 100, 50)
+      assert.strictEqual(result.r, 255)
+      assert.strictEqual(result.g, 0)
+      assert.strictEqual(result.b, 0)
+    })
+
+    it("converts lightness 75%", () => {
+      const result = hslToRGB(0, 100, 75)
+      assert.ok(result.r === 255)
+      assert.ok(result.g > 0)
+      assert.ok(result.b > 0)
+    })
+
+    it("converts lightness 100% (white)", () => {
+      assert.deepStrictEqual(hslToRGB(0, 100, 100), { r: 255, g: 255, b: 255 })
+    })
+  })
+
+  describe("Saturation Variations", () => {
+    it("converts zero saturation (gray)", () => {
+      const result = hslToRGB(0, 0, 50)
+      assert.ok(result.r === result.g && result.g === result.b)
+    })
+
+    it("converts 50% saturation", () => {
+      const result = hslToRGB(0, 50, 50)
+      assert.ok(result.r > result.g && result.r > result.b)
+    })
+
+    it("converts full saturation", () => {
+      const result = hslToRGB(0, 100, 50)
+      assert.deepStrictEqual(result, { r: 255, g: 0, b: 0 })
+    })
+  })
+
+  describe("Hue Range Coverage", () => {
+    it("handles hue 0 (red)", () => {
+      const result = hslToRGB(0, 100, 50)
+      assert.strictEqual(result.r, 255)
+      assert.strictEqual(result.g, 0)
+      assert.strictEqual(result.b, 0)
+    })
+
+    it("handles hue 60 (yellow)", () => {
+      assert.deepStrictEqual(hslToRGB(60, 100, 50), { r: 255, g: 255, b: 0 })
+    })
+
+    it("handles hue 120 (green)", () => {
+      assert.deepStrictEqual(hslToRGB(120, 100, 50), { r: 0, g: 255, b: 0 })
+    })
+
+    it("handles hue 180 (cyan)", () => {
+      assert.deepStrictEqual(hslToRGB(180, 100, 50), { r: 0, g: 255, b: 255 })
+    })
+
+    it("handles hue 240 (blue)", () => {
+      assert.deepStrictEqual(hslToRGB(240, 100, 50), { r: 0, g: 0, b: 255 })
+    })
+
+    it("handles hue 300 (magenta)", () => {
+      assert.deepStrictEqual(hslToRGB(300, 100, 50), { r: 255, g: 0, b: 255 })
+    })
+
+    it("handles hue 360 (red, wrap-around)", () => {
+      const result360 = hslToRGB(360, 100, 50)
+      const result0 = hslToRGB(0, 100, 50)
+      assert.deepStrictEqual(result360, result0)
+    })
+  })
+
+  describe("Round-Trip Conversions", () => {
+    it("round-trips primary colors", () => {
+      const original = { r: 255, g: 0, b: 0 }
+      const hsl = rgbToHSL(original.r, original.g, original.b)
+      const result = hslToRGB(hsl.h, hsl.s, hsl.l)
+      assert.deepStrictEqual(result, original)
+    })
+
+    it("round-trips complex colors", () => {
+      const original = { r: 128, g: 200, b: 75 }
+      const hsl = rgbToHSL(original.r, original.g, original.b)
+      const result = hslToRGB(hsl.h, hsl.s, hsl.l)
+      // Allow for rounding errors
+      assert.ok(Math.abs(result.r - original.r) <= 1)
+      assert.ok(Math.abs(result.g - original.g) <= 1)
+      assert.ok(Math.abs(result.b - original.b) <= 1)
+    })
+
+    it("round-trips achromatic colors", () => {
+      const original = { r: 128, g: 128, b: 128 }
+      const hsl = rgbToHSL(original.r, original.g, original.b)
+      const result = hslToRGB(hsl.h, hsl.s, hsl.l)
+      assert.ok(Math.abs(result.r - original.r) <= 1)
+      assert.ok(Math.abs(result.g - original.g) <= 1)
+      assert.ok(Math.abs(result.b - original.b) <= 1)
+    })
+  })
+
+  describe("Edge Cases", () => {
+    it("handles intermediate hue values", () => {
+      const result = hslToRGB(45, 100, 50)
+      assert.ok(result.r > 0 && result.g > 0)
+    })
+
+    it("returns values in valid RGB range", () => {
+      const result = hslToRGB(123, 45, 67)
+      assert.ok(result.r >= 0 && result.r <= 255)
+      assert.ok(result.g >= 0 && result.g <= 255)
+      assert.ok(result.b >= 0 && result.b <= 255)
+    })
+  })
+})
+
+describe("hexToHSL", () => {
+  describe("Primary Colors", () => {
+    it("converts red", () => {
+      assertHSLClose(hexToHSL("#FF0000"), { h: 0, s: 100, l: 50 })
+    })
+
+    it("converts green", () => {
+      assertHSLClose(hexToHSL("#00FF00"), { h: 120, s: 100, l: 50 })
+    })
+
+    it("converts blue", () => {
+      assertHSLClose(hexToHSL("#0000FF"), { h: 240, s: 100, l: 50 })
+    })
+  })
+
+  describe("Secondary Colors", () => {
+    it("converts cyan", () => {
+      assertHSLClose(hexToHSL("#00FFFF"), { h: 180, s: 100, l: 50 })
+    })
+
+    it("converts magenta", () => {
+      assertHSLClose(hexToHSL("#FF00FF"), { h: 300, s: 100, l: 50 })
+    })
+
+    it("converts yellow", () => {
+      assertHSLClose(hexToHSL("#FFFF00"), { h: 60, s: 100, l: 50 })
+    })
+  })
+
+  describe("Achromatic Colors", () => {
+    it("converts black", () => {
+      assertHSLClose(hexToHSL("#000000"), { h: 0, s: 0, l: 0 })
+    })
+
+    it("converts white", () => {
+      assertHSLClose(hexToHSL("#FFFFFF"), { h: 0, s: 0, l: 100 })
+    })
+
+    it("converts mid gray", () => {
+      const result = hexToHSL("#808080")
+      assertHSLClose(result, { h: 0, s: 0, l: 50.2 }, 0.5)
+    })
+  })
+
+  describe("Hash Symbol Handling", () => {
+    it("converts hex with hash", () => {
+      const withHash = hexToHSL("#FF5733")
+      const expected = { h: 11.3, s: 100, l: 60 }
+      assertHSLClose(withHash, expected, 1)
+    })
+
+    it("converts hex without hash", () => {
+      const withoutHash = hexToHSL("FF5733")
+      const withHash = hexToHSL("#FF5733")
+      assert.deepStrictEqual(withoutHash, withHash)
+    })
+  })
+
+  describe("Case Sensitivity", () => {
+    it("converts lowercase hex", () => {
+      assertHSLClose(hexToHSL("#ff0000"), { h: 0, s: 100, l: 50 })
+    })
+
+    it("converts uppercase hex", () => {
+      assertHSLClose(hexToHSL("#FF0000"), { h: 0, s: 100, l: 50 })
+    })
+
+    it("converts mixed case hex", () => {
+      assertHSLClose(hexToHSL("#Ff0000"), { h: 0, s: 100, l: 50 })
+    })
+  })
+})
+
+describe("hslToHex", () => {
+  describe("Primary Colors", () => {
+    it("converts red HSL to hex", () => {
+      assert.strictEqual(hslToHex({ h: 0, s: 100, l: 50 }), "#ff0000")
+    })
+
+    it("converts green HSL to hex", () => {
+      assert.strictEqual(hslToHex({ h: 120, s: 100, l: 50 }), "#00ff00")
+    })
+
+    it("converts blue HSL to hex", () => {
+      assert.strictEqual(hslToHex({ h: 240, s: 100, l: 50 }), "#0000ff")
+    })
+  })
+
+  describe("Secondary Colors", () => {
+    it("converts cyan HSL to hex", () => {
+      assert.strictEqual(hslToHex({ h: 180, s: 100, l: 50 }), "#00ffff")
+    })
+
+    it("converts magenta HSL to hex", () => {
+      assert.strictEqual(hslToHex({ h: 300, s: 100, l: 50 }), "#ff00ff")
+    })
+
+    it("converts yellow HSL to hex", () => {
+      assert.strictEqual(hslToHex({ h: 60, s: 100, l: 50 }), "#ffff00")
+    })
+  })
+
+  describe("Achromatic Colors", () => {
+    it("converts black HSL to hex", () => {
+      assert.strictEqual(hslToHex({ h: 0, s: 0, l: 0 }), "#000000")
+    })
+
+    it("converts white HSL to hex", () => {
+      assert.strictEqual(hslToHex({ h: 0, s: 0, l: 100 }), "#ffffff")
+    })
+
+    it("converts gray HSL to hex", () => {
+      const result = hslToHex({ h: 0, s: 0, l: 50 })
+      assert.ok(result.startsWith("#"))
+      assert.ok(result.length === 7)
+    })
+  })
+
+  describe("Format Validation", () => {
+    it("always starts with hash", () => {
+      const result = hslToHex({ h: 123, s: 45, l: 67 })
+      assert.ok(result.startsWith("#"))
+    })
+
+    it("always returns 7 characters", () => {
+      const result = hslToHex({ h: 0, s: 0, l: 0 })
+      assert.strictEqual(result.length, 7)
+    })
+
+    it("always returns lowercase hex", () => {
+      const result = hslToHex({ h: 200, s: 75, l: 60 })
+      assert.strictEqual(result, result.toLowerCase())
+    })
+
+    it("pads single digit hex values with zero", () => {
+      const result = hslToHex({ h: 0, s: 0, l: 1 })
+      assert.match(result, /^#[0-9a-f]{6}$/)
+    })
+  })
+
+  describe("Round-Trip Conversions", () => {
+    it("round-trips with hexToHSL for primary colors", () => {
+      const original = "#ff0000"
+      const hsl = hexToHSL(original)
+      const result = hslToHex(hsl)
+      assert.strictEqual(result, original)
+    })
+
+    it("round-trips with hexToHSL for complex colors", () => {
+      const original = "#3498db"
+      const hsl = hexToHSL(original)
+      const result = hslToHex(hsl)
+      assert.strictEqual(result, original)
+    })
+
+    it("round-trips achromatic colors", () => {
+      const original = "#ffffff"
+      const hsl = hexToHSL(original)
+      const result = hslToHex(hsl)
+      assert.strictEqual(result, original)
+    })
+  })
+
+  describe("Edge Cases", () => {
+    it("handles maximum HSL values", () => {
+      const result = hslToHex({ h: 359, s: 100, l: 50 })
+      assert.ok(result.startsWith("#"))
+      assert.strictEqual(result.length, 7)
+    })
+
+    it("handles minimum HSL values", () => {
+      const result = hslToHex({ h: 0, s: 0, l: 0 })
+      assert.strictEqual(result, "#000000")
+    })
+
+    it("handles fractional HSL values", () => {
+      const result = hslToHex({ h: 123.456, s: 78.9, l: 45.6 })
       assert.ok(result.startsWith("#"))
       assert.strictEqual(result.length, 7)
     })

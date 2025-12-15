@@ -2,7 +2,12 @@
  * Handles color picker DOM creation and UI updates
  */
 
-import { hexToHSV, hexToRGB, hsvToHex } from "../utils/ColorConversions.mjs"
+import {
+  hexToHSV,
+  hexToRGB,
+  hexToHSL,
+  hsvToHex,
+} from "../utils/ColorConversions.mjs"
 
 export class PickerUI {
   static createPickerElement(initialColor) {
@@ -11,6 +16,7 @@ export class PickerUI {
 
     const hsv = hexToHSV(initialColor)
     const rgb = hexToRGB(initialColor)
+    const hsl = hexToHSL(initialColor)
     const baseColor = hsvToHex({ h: hsv.h, s: 100, v: 100 })
 
     // Create main content container
@@ -133,18 +139,97 @@ export class PickerUI {
 
     content.appendChild(controls)
 
-    // Create hex input row
-    const hexInputRow = document.createElement("div")
-    hexInputRow.className = "bcp-hex-input-row"
+    // Create color input row
+    const colorInputRow = document.createElement("div")
+    colorInputRow.className = "bcp-color-input-row"
+
+    // Create format toggle button
+    const formatToggle = document.createElement("button")
+    formatToggle.type = "button"
+    formatToggle.className = "bcp-format-toggle"
+    formatToggle.textContent = "HEX"
+    formatToggle.title = "Toggle color format"
+    colorInputRow.appendChild(formatToggle)
+
+    // Create hex input container
+    const hexInputContainer = document.createElement("div")
+    hexInputContainer.className = "bcp-input-container bcp-hex-container"
 
     const hexInput = document.createElement("input")
     hexInput.type = "text"
-    hexInput.className = "bcp-hex-input"
+    hexInput.className = "bcp-color-input bcp-hex-input"
     hexInput.value = initialColor.toUpperCase()
     hexInput.maxLength = 7
-    hexInputRow.appendChild(hexInput)
+    hexInputContainer.appendChild(hexInput)
+    colorInputRow.appendChild(hexInputContainer)
 
-    content.appendChild(hexInputRow)
+    // Create RGB inputs container
+    const rgbInputContainer = document.createElement("div")
+    rgbInputContainer.className =
+      "bcp-input-container bcp-rgb-container bcp-hidden"
+
+    const rgbInputR = document.createElement("input")
+    rgbInputR.type = "number"
+    rgbInputR.className = "bcp-color-input bcp-rgb-input"
+    rgbInputR.placeholder = "R"
+    rgbInputR.min = "0"
+    rgbInputR.max = "255"
+    rgbInputR.value = rgb.r
+    rgbInputContainer.appendChild(rgbInputR)
+
+    const rgbInputG = document.createElement("input")
+    rgbInputG.type = "number"
+    rgbInputG.className = "bcp-color-input bcp-rgb-input"
+    rgbInputG.placeholder = "G"
+    rgbInputG.min = "0"
+    rgbInputG.max = "255"
+    rgbInputG.value = rgb.g
+    rgbInputContainer.appendChild(rgbInputG)
+
+    const rgbInputB = document.createElement("input")
+    rgbInputB.type = "number"
+    rgbInputB.className = "bcp-color-input bcp-rgb-input"
+    rgbInputB.placeholder = "B"
+    rgbInputB.min = "0"
+    rgbInputB.max = "255"
+    rgbInputB.value = rgb.b
+    rgbInputContainer.appendChild(rgbInputB)
+    colorInputRow.appendChild(rgbInputContainer)
+
+    // Create HSL inputs container
+    const hslInputContainer = document.createElement("div")
+    hslInputContainer.className =
+      "bcp-input-container bcp-hsl-container bcp-hidden"
+
+    const hslInputH = document.createElement("input")
+    hslInputH.type = "number"
+    hslInputH.className = "bcp-color-input bcp-hsl-input"
+    hslInputH.placeholder = "H"
+    hslInputH.min = "0"
+    hslInputH.max = "360"
+    hslInputH.value = Math.round(hsl.h)
+    hslInputContainer.appendChild(hslInputH)
+
+    const hslInputS = document.createElement("input")
+    hslInputS.type = "number"
+    hslInputS.className = "bcp-color-input bcp-hsl-input"
+    hslInputS.placeholder = "S"
+    hslInputS.min = "0"
+    hslInputS.max = "100"
+    hslInputS.value = Math.round(hsl.s)
+    hslInputContainer.appendChild(hslInputS)
+
+    const hslInputL = document.createElement("input")
+    hslInputL.type = "number"
+    hslInputL.className = "bcp-color-input bcp-hsl-input"
+    hslInputL.placeholder = "L"
+    hslInputL.min = "0"
+    hslInputL.max = "100"
+    hslInputL.value = Math.round(hsl.l)
+    hslInputContainer.appendChild(hslInputL)
+
+    colorInputRow.appendChild(hslInputContainer)
+    content.appendChild(colorInputRow)
 
     // Create recent colors container
     const recentColors = document.createElement("div")
